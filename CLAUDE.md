@@ -145,3 +145,13 @@ photos. `xtask` = tooling (`ci`, `layers`, `assets`, `parity`, `wasm`, `corpus`,
 `nix/package.nix` = the Nix package (`nix build` builds both binaries with the craft-fonts input, installs the
 desktop file/icons/AppStream metadata and runs `cargo test --workspace`; `nix develop` = dev shell). Community-maintained; CI only
 evaluates it (`.github/workflows/nix.yml`), so the build may lag behind the workspace; see README → Quick start.
+
+## Agent skills
+
+### Issue tracker
+
+Reports are markdown files in the Software Depot's `apps/<App>/reports/`, not GitHub Issues. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
