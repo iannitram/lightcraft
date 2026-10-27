@@ -18,7 +18,7 @@ LightCraft is storytold's pure-Rust photo library and raw developer aiming at pa
 | Item | Where | Disposition |
 |---|---|---|
 | Use it for the owner's day-to-day photo work: the 95% feature list and a golden task per platform | #6, #7 | keep on our fork (needs the owner) |
-| Tests on macOS and Windows in our CI (upstream gap 9) | build issue | send upstream |
+| Tests on macOS and Windows in our CI (upstream gap 9) | #16 | send upstream |
 | Bugs found by our sibling sweep | #4 | send upstream when reproduced and fixed |
 | Anything else | none yet: we run upstream's code unchanged | |
 

@@ -14,6 +14,7 @@ The code is upstream's Cargo workspace. Upstream's committed architecture summar
 | `crates/meta` | lightcraft-meta | L1 | EXIF, XMP, IPTC | pure, all |
 | `crates/develop` | lightcraft-develop | L1 | The non-destructive edit model, control specs, presets | pure, all |
 | `crates/denoise-core`, `denoise`, `faces`, `scenes`, `slideshow`, `inpaint`, `geocode` | lightcraft-* | L1 | AI denoise, face detection, demo scenes, slides, hole filling, offline geocoding | pure, all (CPU inference) |
+| `crates/testkit` | lightcraft-testkit | dev-only | Test tooling: a test that cannot run here records why, so `cargo xtask ci` reports it | pure, all |
 | `crates/lensdb` | lightcraft-lensdb | L2 | Lens profile models and lensfun-format loader | pure, all |
 | `crates/pipeline` | lightcraft-pipeline | L2 | The develop pipeline, CPU reference | pure, all |
 | `crates/catalog`, `preview`, `merge`, `segment` | lightcraft-* | L3 | Library and persistence, preview cache and job pool, HDR/panorama merge, SAM 3 segmentation | all |
