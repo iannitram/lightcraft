@@ -1,6 +1,8 @@
 # Code map (our fork)
 
-The code is upstream's Cargo workspace. Upstream's committed architecture summary is `docs/architecture.md` (layers L0-L6, enforced by `cargo xtask layers` inside `cargo xtask ci`); read it first. This map adds how the modules connect and what differs per platform (R04).
+The code is upstream's Cargo workspace. Upstream's committed architecture summary is `docs/architecture.md` (layers L0-L6, enforced by `cargo xtask layers` inside `cargo xtask ci`); read it first. This map adds how the modules connect and what differs per platform (R04). Audited 2026-10-28 against `main`: the 29 library crates, 3 apps and `xtask` are the whole workspace (`crates/*`, `apps/*`, `xtask`), and every crate sits in the row and layer that its `Cargo.toml` description names.
+
+Describes commit: e1e51488 (2026-10-28)
 
 ## Modules
 
@@ -39,8 +41,18 @@ flowchart TD
   codecs --> heif & color & raster
 ```
 
+## Upstream and our delta
+
+Every crate, app and the `xtask` here is upstream's (`storytold/lightcraft`). Our delta on top is documentation only: `PIPELINE.md`, `SPEC.md`, `CHANGELOG.md`, `AGENTS.fork.md`, this map, `docs/agents/`, and ten lines in `CLAUDE.md` (agent-skills config); `git diff --stat upstream/main...main` shows no source file. Upstream commits daily, so a day or two of its work is not on `main` until the daily sync merges it (on 2026-10-28 the crate set was identical on both).
+
+## Outside the workspace
+
+In this repo but outside the Cargo workspace: `tools/` (SAM 3 install scripts and the Python reference scripts for the `segment` crate and the camera table; not part of the build), `packaging/` (per-OS release packaging: `linux`, `macos`, `windows`, `freebsd`, `web`), `assets/` (app icons, fonts, camera profiles and tone data), `nix/` and `flake.nix`, `omastore.toml` (store listing data), `contributors/`.
+
+Not here at all: shared code that comes in as git dependencies pinned by revision, so a change to it is a change in another repository: the `craft-*` crates (`craft-docpath`, `craft-ui`, `craft-update`, `craft-window` from `storytold/craft-libs`) and forks of egui, eframe and winit (`storytold/egui`, `storytold/winit`).
+
 ## Mac, PC and Linux
 
-- CI: upstream's `ci.yml` runs `cargo xtask ci` on Linux x64 through the shared gate workflow; FreeBSD runs `cargo test`; macOS and Windows only build packages (gap 9). Our build issue adds macOS and Windows test jobs.
+- CI: `ci.yml` (every pull request and push to main) calls the shared gate workflow in `storytold/craft-common-actions` with its default `os` input, `["ubuntu-24.04"]`, so `cargo xtask ci` runs on Linux x64 only. No workflow runs the tests on macOS or Windows (gap 9; our build issue #16 adds them). Other workflows: `freebsd.yml` (VM build, nightly and on release), `windows-arm64.yml` (cross-builds the ARM64 package and smoke-tests the install on a native ARM runner; no `cargo test`), `packaging-lint.yml` (static checks plus a `windows-latest` job that tests the MSI install-folder logic), `nix.yml` (flake evaluation), `sonarcloud.yml` and `release.yml`.
 - Platform code sits behind `cfg(target_os)` in `sysmem`, `ui-egui` (menus, dialogs, settings) and `gpu` backends; a change there gets a `platform:*` label.
 - Display profiles: macOS reads the screen's, Linux reads colord's, Windows has none yet (gap 22).
