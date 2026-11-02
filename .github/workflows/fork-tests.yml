@@ -1,0 +1,60 @@
+name: Fork tests
+
+# Keep our platform test coverage separate from upstream's workflows for easier syncs.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fork-tests-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  tests:
+    name: tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-2022]
+    env:
+      CARGO_TERM_COLOR: always
+      CRAFT_FONTS_DIR: ${{ github.workspace }}/.craft-fonts
+      CRAFT_FONTS_REQUIRED: "1"
+      # The runner context is not allowed at job level (actionlint); the workspace is.
+      LIGHTCRAFT_SKIP_LOG: ${{ github.workspace }}/lightcraft-skips.jsonl
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check out craft-fonts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: storytold/craft-fonts
+          # Same font revision as upstream's CI and release workflows.
+          ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+          path: .craft-fonts
+          persist-credentials: false
+      # Native SDKs are supplied by these runner images; the Linux apt packages
+      # listed in ci.yml are not needed for Metal or Windows/MSVC.
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        with:
+          key: fork-tests-${{ matrix.os }}
+      - name: Test workspace
+        run: cargo test --workspace --locked
+      - name: Upload recorded resource skips
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-skips-${{ matrix.os }}
+          path: ${{ env.LIGHTCRAFT_SKIP_LOG }}
+          if-no-files-found: ignore
