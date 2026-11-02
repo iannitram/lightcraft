@@ -47,6 +47,23 @@ fn every_dialog_is_a_modal_dialog_with_its_title() {
 #[test]
 fn settings_is_a_dialog_too() {
     let mut h = harness();
+    // Settings paints every language's endonym. Runner builds without craft-fonts
+    // may lack those glyphs; keep Linux's existing coverage and font-enabled builds strict.
+    #[cfg(any(target_os = "macos", target_os = "windows"))]
+    if lightcraft_engine::CRAFT_FONTS.is_empty() {
+        for locale in lightcraft_ui_egui::i18n::Locale::for_picker() {
+            for font in [egui::FontId::proportional(13.0), egui::FontId::new(13.0, egui::FontFamily::Name("semibold".into()))] {
+                if let Some(ch) = locale.name().chars().find(|ch| !ch.is_whitespace() && !h.ctx.fonts_mut(|fonts| fonts.has_glyph(&font, *ch))) {
+                    lightcraft_testkit::skip!(
+                        Fonts,
+                        "Settings language picker needs glyph {ch:?} in {:?}; built without CRAFT_FONTS_DIR",
+                        font.family
+                    );
+                    return;
+                }
+            }
+        }
+    }
     h.state_mut().run("app.settings", serde_json::json!({})).expect("Settings opens");
     h.run_steps(6);
     let found = windows(&h);
