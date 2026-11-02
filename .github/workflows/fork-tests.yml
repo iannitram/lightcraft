@@ -27,7 +27,8 @@ jobs:
       CARGO_TERM_COLOR: always
       CRAFT_FONTS_DIR: ${{ github.workspace }}/.craft-fonts
       CRAFT_FONTS_REQUIRED: "1"
-      LIGHTCRAFT_SKIP_LOG: ${{ runner.temp }}/lightcraft-skips.jsonl
+      # The runner context is not allowed at job level (actionlint); the workspace is.
+      LIGHTCRAFT_SKIP_LOG: ${{ github.workspace }}/lightcraft-skips.jsonl
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,16 +44,16 @@ jobs:
       # Native SDKs are supplied by these runner images; the Linux apt packages
       # listed in ci.yml are not needed for Metal or Windows/MSVC.
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
       - name: Cache Rust build
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
           key: fork-tests-${{ matrix.os }}
       - name: Test workspace
         run: cargo test --workspace --locked
       - name: Upload recorded resource skips
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-skips-${{ matrix.os }}
           path: ${{ env.LIGHTCRAFT_SKIP_LOG }}
