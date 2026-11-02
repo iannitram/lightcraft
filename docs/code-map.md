@@ -1,8 +1,8 @@
 # Code map (our fork)
 
-The code is upstream's Cargo workspace. Upstream's committed architecture summary is `docs/architecture.md` (layers L0-L6, enforced by `cargo xtask layers` inside `cargo xtask ci`); read it first. This map adds how the modules connect and what differs per platform (R04). Audited 2026-10-28 against `main`: the 29 library crates, 3 apps and `xtask` are the whole workspace (`crates/*`, `apps/*`, `xtask`), and every crate sits in the row and layer that its `Cargo.toml` description names.
+The code is upstream's Cargo workspace. Upstream's committed architecture summary is `docs/architecture.md` (layers L0-L6, enforced by `cargo xtask layers` inside `cargo xtask ci`); read it first. This map adds how the modules connect and what differs per platform (R04). Audited 2026-11-02 against `main`: the 29 library crates, 3 apps and `xtask` are the whole workspace (`crates/*`, `apps/*`, `xtask`), and every crate sits in the row and layer that its `Cargo.toml` description names.
 
-Describes commit: e1e51488 (2026-10-28)
+Describes commit: 52a4e58b (2026-11-02)
 
 ## Modules
 
@@ -43,7 +43,7 @@ flowchart TD
 
 ## Upstream and our delta
 
-Every crate, app and the `xtask` here is upstream's (`storytold/lightcraft`). Our delta on top is documentation only: `PIPELINE.md`, `SPEC.md`, `CHANGELOG.md`, `AGENTS.fork.md`, this map, `docs/agents/`, and ten lines in `CLAUDE.md` (agent-skills config); `git diff --stat upstream/main...main` shows no source file. Upstream commits daily, so a day or two of its work is not on `main` until the daily sync merges it (on 2026-10-28 the crate set was identical on both).
+Every crate, app and the `xtask` here is upstream's (`storytold/lightcraft`). Our delta on top is documentation plus one workflow and two test edits: `PIPELINE.md`, `SPEC.md`, `CHANGELOG.md`, `AGENTS.fork.md`, this map, `docs/agents/`, ten lines in `CLAUDE.md` (agent-skills config), `.github/workflows/fork-tests.yml` (macOS and Windows test run, below), and two test-only edits in `crates/engine` (`src/availability.rs`: the wake check waits instead of asserting at once; `src/export/tests.rs`: the 16-bit ZIP size check is recorded as skipped on Windows, #27). No non-test source file differs from upstream. Upstream commits daily, so a day or two of its work is not on `main` until the daily sync merges it (on 2026-11-02 the crate set was identical on both).
 
 ## Outside the workspace
 
@@ -53,6 +53,6 @@ Not here at all: shared code that comes in as git dependencies pinned by revisio
 
 ## Mac, PC and Linux
 
-- CI: `ci.yml` (every pull request and push to main) calls the shared gate workflow in `storytold/craft-common-actions` with its default `os` input, `["ubuntu-24.04"]`, so `cargo xtask ci` runs on Linux x64 only. No workflow runs the tests on macOS or Windows (gap 9; our build issue #16 adds them). Other workflows: `freebsd.yml` (VM build, nightly and on release), `windows-arm64.yml` (cross-builds the ARM64 package and smoke-tests the install on a native ARM runner; no `cargo test`), `packaging-lint.yml` (static checks plus a `windows-latest` job that tests the MSI install-folder logic), `nix.yml` (flake evaluation), `sonarcloud.yml` and `release.yml`.
+- CI: `ci.yml` (every pull request and push to main) calls the shared gate workflow in `storytold/craft-common-actions` with its default `os` input, `["ubuntu-24.04"]`, so `cargo xtask ci` runs on Linux x64 only. Our own `fork-tests.yml` (kept apart from upstream's workflows so syncs stay clean) runs `cargo test --workspace --locked` on `macos-14` and `windows-2022` on every pull request and push to main, with craft-fonts checked out at the revision upstream's CI pins; it uploads the recorded resource skips (gap 9, build issue #16, closed). Other workflows: `freebsd.yml` (VM build, nightly and on release), `windows-arm64.yml` (cross-builds the ARM64 package and smoke-tests the install on a native ARM runner; no `cargo test`), `packaging-lint.yml` (static checks plus a `windows-latest` job that tests the MSI install-folder logic), `nix.yml` (flake evaluation), `sonarcloud.yml` and `release.yml`.
 - Platform code sits behind `cfg(target_os)` in `sysmem`, `ui-egui` (menus, dialogs, settings) and `gpu` backends; a change there gets a `platform:*` label.
 - Display profiles: macOS reads the screen's, Linux reads colord's, Windows has none yet (gap 22).
