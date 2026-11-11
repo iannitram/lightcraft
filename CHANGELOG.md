@@ -1,0 +1,11 @@
+# Changelog (our fork)
+
+Newest first. One line per change of stage, release or decision that the next session needs. Upstream's history is in ROADMAP.md's progress log.
+
+- 2026-11-06 Stage Parked, on my call: every Craft app except WavCraft is parked; satellites take no issues here (R26) until I unpark it.
+- 2026-11-02 Code map refreshed: fork-tests.yml (macOS and Windows tests) and the two test-only engine edits are now in the delta.
+- 2026-10-26 End-of-night sweep: code map adds crates/testkit; SPEC delta and PIPELINE Notes cite issues #16-#23; upstream sync PRs #14, #15 merged.
+- 2026-10-26 Delta marks approved by the owner as written; "to confirm" notes removed.
+- 2026-10-26 Normalized to pipeline v2 at Dev Loop: SPEC.md (upstream roadmap + our delta), docs/code-map.md, PIPELINE.md, AGENTS.fork.md; build issues filed for beta gaps upstream has no open PR for.
+- 2026-10-26 Branch sweep: main is the integration branch.
+- 2026-10-19 Fork set up: pinned goals issue, 95% list and golden-task issues, sibling sweep.
