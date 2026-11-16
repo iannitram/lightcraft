@@ -11,8 +11,7 @@ on:
     paths:
       - .github/workflows/freebsd.yml
       - packaging/freebsd/**
-  schedule:
-    - cron: "7 4 * * *"
+  # The nightly run (schedule, cron "7 4 * * *") is off in this fork; the upstream repository runs it.
   workflow_dispatch:
 
 concurrency:
