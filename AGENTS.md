@@ -233,3 +233,5 @@ evaluates it (`.github/workflows/nix.yml`), so the build may lag behind the work
 ## Shared libraries
 
 Before adding or changing file-format, codec, protocol, or reusable UI code, check `storytold/craft-libs` and its open PRs first; reuse or extend the shared library rather than duplicating it locally, keep app-specific policy and model mapping in the app, and preserve behavior, security/resource limits, attribution, and regression coverage during cutovers.
+
+**Upstream and peers:** see `PEERS.md` at the repo root. When I say "upstream", I mean the repo in its Upstream section; reuse a peer's code only as that file allows.
